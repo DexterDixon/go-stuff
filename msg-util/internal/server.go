@@ -17,44 +17,67 @@ func Logging(next http.Handler) http.Handler {
 	})
 }
 
-func CreateProducers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Create Producers endpoint")
-}
-
+// GET /v1/producers
 func GetProducers(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Get Producers endpoint")
 }
 
+// POST /v1/consumers
+func CreateProducers(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Create Producers endpoint")
+}
+
+// PUT /v1/consumers
 func UpdateProducers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Update Producers endpoint")
+	msg := r.URL.Query().Get("msg")
+	fmt.Fprintf(w, "Updatating Producer: %s\n", msg)
 }
 
+// DELETE /v1/producers?name={producerName}
 func DeleteProducers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Delete Producers endpoint")
+	msg := r.URL.Query().Get("msg")
+	fmt.Fprintf(, w"Deleting Producer: %s\n", msg)
 }
 
-func CreateConsumers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Create Consumers endpoint")
-}
-
+// GET /v1/consumers
 func GetConsumers(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Get Consumers endpoint")
 }
 
+// POST /v1/consumers
+func CreateConsumers(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Create Consumers endpoint")
+}
+
+// PUT /v1/consumers?name={consumerName}
 func UpdateConsumers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Update Consumers endpoint")
+	msg := r.URL.Query().Get("msg")
+	fmt.Fprintf(w, "Updatating Consumer: %s\n", msg)
 }
 
+// PATCH /v1/consumers?name={consumerName}
 func AddConsumerTopic(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Add Consumers endpoint")
+	msg := r.URL.Query().Get("msg")
+	fmt.Fprintf(w, "Adding Consumer: %s\n", msg)
 }
 
+// DELETE /v1/consumers?name={consumerName}
 func DeleteConsumers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Delete Consumers endpoint")
+	msg := r.URL.Query().Get("msg")
+	fmt.Fprintf(w, "Deleting Consumer: %s\n", msg)
 }
 
-func GetHealt(w http.ResponseWriter, r *http.Request) {
+// GET /v1/healthz
+func GetHealth(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+}
+
+// GET /v1/echo/{message}
+func Echo(w http.ResponseWriter, r *http.Request) {
+	msg := r.PathValue("msg")
+	WriteJSON(w, http.StatusOK, map[string]any{
+		"msg": msg,
+	})
 }
 
 func WriteJSON(w http.ResponseWriter, status int, response any) {

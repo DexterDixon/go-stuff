@@ -30,7 +30,6 @@ var serverCmd = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("server called")
-
 		mux := http.NewServeMux()
 
 		//Producer endpoints
@@ -47,7 +46,8 @@ var serverCmd = &cobra.Command{
 		mux.HandleFunc("DELETE /v1/consumers/{name}", internal.DeleteConsumers)
 
 		//Utility endpoints
-		mux.HandleFunc("/healthz", internal.GetHealt)
+		mux.HandleFunc("GET /healthz", internal.GetHealth)
+		mux.HandleFunc("GET /echo/{msg...}", internal.Echo)
 		mux.Handle("/", internal.Logging(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			http.NotFound(w, r)
 		})))
