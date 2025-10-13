@@ -29,23 +29,10 @@ var consumerCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Consumer Yum Yum Yum :O")
 
-		fmt.Printf("Configuring TLS")
-		restConfig, err := internal.GetRestConfig("", inCluster)
+		fmt.Println("Getting secure Kafka config")
+		kafkaConfig, err := internal.GetSecureKafkaConfig(inCluster, namespace, args[0])
 		if err != nil {
-			panic(err)
-		}
-		clientset, err := internal.GetClientset(restConfig)
-		if err != nil {
-			panic(err)
-		}
-		secret, err := internal.GetSecret(clientset, namespace, args[0])
-		if err != nil {
-			panic(err)
-		}
-
-		kafkaConfig, err := internal.ConfigTLS(nil, secret.Data)
-		if err != nil {
-			fmt.Printf("Error configuring TLS: %v\n", err)
+			fmt.Printf("Error getting secure kafka client: %v\n", err)
 			panic(err)
 		}
 
