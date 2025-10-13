@@ -17,6 +17,26 @@ func Logging(next http.Handler) http.Handler {
 	})
 }
 
+type CreateProducerReq struct {
+	Name             string   `json:"name"`             // required
+	BootstrapServers []string `json:"bootstrapServers"` // required (e.g. ["broker:9092"])
+	Topic            string   `json:"topic"`            // required
+	SecretNamespace  string   `json:"secretNamespace"`  // required
+}
+
+type CreateConsumerReq struct {
+	Name             string   `json:"name"`             // required
+	BootstrapServers []string `json:"bootstrapServers"` // required (e.g. ["broker:9092"])
+	Topics           []string `json:"topics"`           // required
+	GroupID          string   `json:"groupID"`          // required
+	SecretNamespace  string   `json:"secretNamespace"`  // required
+}
+
+type ServerResp struct {
+	Name    string `json:"name"`
+	Success bool   `json:"success"`
+}
+
 // GET /v1/producers
 func GetProducers(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Get Producers endpoint")
