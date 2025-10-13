@@ -35,34 +35,34 @@ var serverCmd = &cobra.Command{
 		//Producer endpoints
 		mux.HandleFunc("GET /v1/producers", internal.GetProducers)
 		mux.HandleFunc("POST /v1/producers", internal.CreateProducers)
-		mux.HandleFunc("PUT /v1/producers/{name}", internal.UpdateProducers)
-		mux.HandleFunc("DELETE /v1/producers/{name}", internal.DeleteProducers)
+		mux.HandleFunc("PUT /v1/producers", internal.UpdateProducers)
+		mux.HandleFunc("DELETE /v1/producers", internal.DeleteProducers)
 
 		//Consumer endpoints
 		mux.HandleFunc("GET /v1/consumers", internal.GetConsumers)
 		mux.HandleFunc("POST /v1/consumers", internal.CreateConsumers)
-		mux.HandleFunc("PUT /v1/consumers/{name}", internal.UpdateConsumers)
-		mux.HandleFunc("PATCH /v1/consumers/{name}", internal.AddConsumerTopic)
-		mux.HandleFunc("DELETE /v1/consumers/{name}", internal.DeleteConsumers)
+		mux.HandleFunc("PUT /v1/consumers", internal.UpdateConsumers)
+		mux.HandleFunc("PATCH /v1/consumers", internal.AddConsumerTopic)
+		mux.HandleFunc("DELETE /v1/consumers", internal.DeleteConsumers)
 
 		//Utility endpoints
-		mux.HandleFunc("GET /healthz", internal.GetHealth)
-		mux.HandleFunc("GET /echo/{msg...}", internal.Echo)
-		mux.Handle("/", internal.Logging(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc("GET /v1/healthz", internal.GetHealth)
+		mux.HandleFunc("GET /v1/echo/{msg...}", internal.Echo)
+		mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			http.NotFound(w, r)
-		})))
+		}))
 
 		addr := fmt.Sprintf(":%d", port)
 		srv := &http.Server{
 			Addr:         addr,
-			Handler:      mux,
+			Handler:      internal.Logging(mux),
 			ReadTimeout:  10 * time.Second,
 			WriteTimeout: 10 * time.Second,
 			IdleTimeout:  120 * time.Second,
 		}
 
 		go func() {
-			fmt.Printf("listening on http://localhost%s", srv.Addr)
+			fmt.Printf("listening on http://localhost%s\n", srv.Addr)
 			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				fmt.Printf("Server error: %v\n", err)
 			}
@@ -71,11 +71,6 @@ var serverCmd = &cobra.Command{
 		stop := make(chan os.Signal, 1)
 		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 		<-stop
-
-		fmt.Printf("starting server on port %d\n", port)
-		if err := http.ListenAndServe(addr, mux); err != nil {
-			fmt.Printf("error starting server: %v\n", err)
-		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()

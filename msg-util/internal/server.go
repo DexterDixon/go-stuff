@@ -13,7 +13,7 @@ func Logging(next http.Handler) http.Handler {
 		start := time.Now()
 		next.ServeHTTP(w, r)
 		fmt.Println("Thank you come again :)")
-		fmt.Printf("%s %s %s", r.Method, r.URL.Path, time.Since(start))
+		fmt.Printf("%s %s %s\n", r.Method, r.URL.Path, time.Since(start))
 	})
 }
 
@@ -29,14 +29,14 @@ func CreateProducers(w http.ResponseWriter, r *http.Request) {
 
 // PUT /v1/consumers
 func UpdateProducers(w http.ResponseWriter, r *http.Request) {
-	msg := r.URL.Query().Get("msg")
+	msg := r.URL.Query().Get("name")
 	fmt.Fprintf(w, "Updatating Producer: %s\n", msg)
 }
 
 // DELETE /v1/producers?name={producerName}
 func DeleteProducers(w http.ResponseWriter, r *http.Request) {
-	msg := r.URL.Query().Get("msg")
-	fmt.Fprintf(, w"Deleting Producer: %s\n", msg)
+	msg := r.URL.Query().Get("name")
+	fmt.Fprintf(w, "Deleting Producer: %s\n", msg)
 }
 
 // GET /v1/consumers
@@ -51,19 +51,19 @@ func CreateConsumers(w http.ResponseWriter, r *http.Request) {
 
 // PUT /v1/consumers?name={consumerName}
 func UpdateConsumers(w http.ResponseWriter, r *http.Request) {
-	msg := r.URL.Query().Get("msg")
+	msg := r.URL.Query().Get("name")
 	fmt.Fprintf(w, "Updatating Consumer: %s\n", msg)
 }
 
 // PATCH /v1/consumers?name={consumerName}
 func AddConsumerTopic(w http.ResponseWriter, r *http.Request) {
-	msg := r.URL.Query().Get("msg")
+	msg := r.URL.Query().Get("name")
 	fmt.Fprintf(w, "Adding Consumer: %s\n", msg)
 }
 
 // DELETE /v1/consumers?name={consumerName}
 func DeleteConsumers(w http.ResponseWriter, r *http.Request) {
-	msg := r.URL.Query().Get("msg")
+	msg := r.URL.Query().Get("name")
 	fmt.Fprintf(w, "Deleting Consumer: %s\n", msg)
 }
 
@@ -72,7 +72,7 @@ func GetHealth(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
-// GET /v1/echo/{message}
+// GET /v1/echo/{msg}
 func Echo(w http.ResponseWriter, r *http.Request) {
 	msg := r.PathValue("msg")
 	WriteJSON(w, http.StatusOK, map[string]any{
