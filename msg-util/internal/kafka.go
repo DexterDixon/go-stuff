@@ -36,6 +36,38 @@ func CreateKafkaConsumer(brokers []string, groupID string, config *sarama.Config
 	return consumerGroup
 }
 
+// GetSecureKafkaConfig retrieves Kafka configuration with TLS settings from a Kubernetes secret
+//
+// Parameters:
+//   - inCluster: Boolean indicating if the code is running inside a Kubernetes cluster
+//   - namespace: Namespace where the secret is located
+//   - secretName: Name of the secret containing TLS certificates
+//
+// Returns:
+//   - *sarama.Config: Configured Sarama Kafka configuration with TLS settings
+//   - error: Error if any occurred during the process
+func GetSecureKafkaConfig(inCluster bool, namespace string, secretName string) (*sarama.Config, error) {
+	fmt.Printf("Configuring TLS")
+	restConfig, err := GetRestConfig("", inCluster)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retreive RestConfig: %w", err)
+	}
+	clientset, err := GetClientset(restConfig)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retreive ClientSet: %w", err)
+	}
+	secret, err := GetSecret(clientset, namespace, secretName)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to retreive Secret: %w", err)
+	}
+
+	kafkaConfig, err := ConfigTLS(nil, secret.Data)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to configure TLS: %w", err)
+	}
+	return kafkaConfig, nil
+}
+
 type ConsumerGroupHandler struct{}
 
 func (ConsumerGroupHandler) Setup(sarama.ConsumerGroupSession) error {

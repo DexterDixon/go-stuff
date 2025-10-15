@@ -61,6 +61,13 @@ func GetClientset(restCfg *rest.Config) (*kubernetes.Clientset, error) {
 }
 
 // GetSecret retrieves a secret from the given namespace
+// Parameters:
+// - client: Kubernetes clientset
+// - namespace: Namespace where the secret is located
+// - secretName: Name of the secret to retrieve
+// Returns:
+// - *corev1.Secret: The retrieved secret object
+// - error: Error if any occurred during retrieval
 func GetSecret(client *kubernetes.Clientset, namespace string, secretName string) (*corev1.Secret, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
